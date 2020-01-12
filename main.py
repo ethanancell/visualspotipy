@@ -1,33 +1,34 @@
+'''
+Username can be found by going to your settings in the desktop app.
+client_id, client_secret, and redirect_uri are all made in the
+Spotify Developer Dashboard. Create an app there and link it to visualspotipy.
+
+Also, create a file called client.py in the root directory with the following variables:
+username = 'YOUR_SPOTIFY_USERNAME'
+client_id = 'YOUR_SPOTIFY_APP_CLIENT_ID'
+client_secret = 'YOUR_SPOTIFY_APP_CLIENT_SECRET'
+redirect_uri = 'http://localhost/'
+'''
+
+import sys
+import time
 import spotipy
 import spotipy.util as util
 
-import os
-import sys
-import time
-from time import sleep
-
-# How much access does this app have? Quite a bit apparently
-scope = 'user-library-modify playlist-modify-public user-top-read playlist-read-private user-read-email ' \
-        'user-follow-read user-modify-playback-state user-read-currently-playing user-read-playback-state streaming ' \
-        'app-remote-control '
-
-# Use system environment variables to get token
-username = os.environ.get('SPOTIPY_CLIENT_USERNAME')
-client_id = os.environ.get('SPOTIPY_CLIENT_ID')
-client_secret = os.environ.get('SPOTIPY_CLIENT_SECRET')
-redirect_uri = 'http://localhost/'
+import client
+import config
 
 # The track we will look at
-analysis_id = 'spotify:track:2LfUYXF8jfrHCfwYyf2pRj'
+analysis_id = 'spotify:track:4Sz1LV8m7zng0orrckK2OH'
 
 # Playback requires a list for some reason
 analysis_id_list = [analysis_id]
 
 # Get user credentials
-token = util.prompt_for_user_token(username, scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri)
+token = util.prompt_for_user_token(client.username, config.scope, client_id=client.client_id, client_secret=client.client_secret, redirect_uri=client.redirect_uri)
 
 if not token:
-    print("Can't get a valid user token for ", username)
+    print("Can't get a valid user token for ", client.username)
     sys.exit()
 
 sp = spotipy.Spotify(auth=token)
@@ -65,8 +66,9 @@ while current_time < length_of_song:
             analysis_sections[current_section]['start']:
         section_unplayed[current_section] = False
         current_section += 1
-        print(
-            f"\nSection {current_section} \t Time Signature {analysis_sections[current_section - 1]['time_signature']}")
+        current_timesig = analysis_sections[current_section - 1]['time_signature']
+        print("\nSection {} \t Time Signature {}").format(current_section, current_timesig)
+
 
     current_time = time.time() - start_of_song
     # Print a beat
@@ -75,7 +77,7 @@ while current_time < length_of_song:
         beat_unplayed[current_beat] = False
         current_beat += 1
         if analysis_beats[current_beat - 1]['confidence'] > 0.4:
-            print(f"Beat {current_beat}")
+            print("Beat {}").format(current_beat)
 
     # Set what the current time in the song is
     current_time = time.time() - start_of_song
