@@ -19,7 +19,7 @@ import client
 import config
 
 # The track we will look at
-analysis_id = 'spotify:track:4Sz1LV8m7zng0orrckK2OH'
+analysis_id = 'spotify:track:18Ex4J57MhJ7ou358jFXFx'
 
 # Playback requires a list for some reason
 analysis_id_list = [analysis_id]
@@ -70,7 +70,7 @@ while current_time < length_of_song:
         print("\nSection {} \t Time Signature {}").format(current_section, current_timesig)
 
 
-    current_time = time.time() - start_of_song
+    current_time = time.time() - start_of_song + config.time_offset
     # Print a beat
     if beat_unplayed[current_beat] and analysis_beats[current_beat + 1]['start'] > current_time > \
             analysis_beats[current_beat]['start']:
@@ -80,4 +80,4 @@ while current_time < length_of_song:
             print("Beat {}").format(current_beat)
 
     # Set what the current time in the song is
-    current_time = time.time() - start_of_song
+    current_time = time.time() - start_of_song + config.time_offset
